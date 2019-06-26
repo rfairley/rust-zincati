@@ -5,7 +5,7 @@
 %global crate zincati
 
 Name:           rust-%{crate}
-Version:        0.0.1
+Version:        0.0.2
 Release:        1%{?dist}
 Summary:        Update agent for Fedora CoreOS
 
@@ -38,10 +38,16 @@ Summary:        %{summary}
 %dir %{_prefix}/lib/%{crate}/config.d
 %{_prefix}/lib/%{crate}/config.d/50-fedora-coreos-cincinnati.toml
 %dir /run/%{crate}/config.d
+%dir /run/%{crate}
+%dir /run/%{crate}/private
+# TODO: uncomment once this is created in the zincati.conf tmpfile.
+# %dir /run/%{crate}/public
 %dir %{_sysconfdir}/%{crate}/config.d
+%{_tmpfilesdir}/zincati.conf
 
 %pre         -n %{crate}
-%sysusers_create_package zincati 50-zincati.conf
+%sysusers_create_package %{crate} 50-zincati.conf
+%tmpfiles_create_package %{crate} zincati.conf
 
 %post        -n %{crate}
 %systemd_post zincati.service
@@ -67,11 +73,14 @@ Summary:        %{summary}
 install -Dpm0644 -t %{buildroot}%{_prefix}/lib/%{crate}/config.d \
   dist/config.d/*.toml
 mkdir -p %{buildroot}/run/%{crate}/config.d
+mkdir -p %{buildroot}/run/%{crate}/private
 mkdir -p %{buildroot}%{_sysconfdir}/%{crate}/config.d
 install -Dpm0644 -t %{buildroot}%{_sysusersdir} \
   dist/sysusers.d/*.conf
 install -Dpm0644 -t %{buildroot}%{_unitdir} \
   dist/systemd/system/*.service
+install -Dpm0644 -t %{buildroot}%{_tmpfilesdir} \
+  dist/tmpfiles.d/*.conf
 
 %if %{with check}
 %check
@@ -79,5 +88,8 @@ install -Dpm0644 -t %{buildroot}%{_unitdir} \
 %endif
 
 %changelog
+* Tue Jun 26 2019 Robert Fairley <rfairley@redhat.com> - 0.0.2-1
+- Update to 0.0.2
+
 * Tue Jun 18 13:38:53 UTC 2019 Robert Fairley <rfairley@redhat.com> - 0.0.1-1
 - Initial package
