@@ -6,7 +6,7 @@
 
 Name:           rust-%{crate}
 Version:        0.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Update agent for Fedora CoreOS
 
 # Upstream license specification: Apache-2.0
@@ -40,8 +40,7 @@ Summary:        %{summary}
 %dir /run/%{crate}/config.d
 %dir /run/%{crate}
 %dir /run/%{crate}/private
-# TODO: uncomment once this is created in the zincati.conf tmpfile.
-# %dir /run/%{crate}/public
+# TODO: add /run/zincati/public once created in zincati.conf tmpfile.
 %dir %{_sysconfdir}/%{crate}/config.d
 %{_tmpfilesdir}/zincati.conf
 
@@ -88,7 +87,10 @@ install -Dpm0644 -t %{buildroot}%{_tmpfilesdir} \
 %endif
 
 %changelog
-* Tue Jun 26 2019 Robert Fairley <rfairley@redhat.com> - 0.0.2-1
+* Wed Jun 26 2019 Robert Fairley <rfairley@redhat.com> - 0.0.2-2
+- Fix specfile log, and macro in comment
+
+* Wed Jun 26 2019 Robert Fairley <rfairley@redhat.com> - 0.0.2-1
 - Update to 0.0.2
 
 * Tue Jun 18 13:38:53 UTC 2019 Robert Fairley <rfairley@redhat.com> - 0.0.1-1
