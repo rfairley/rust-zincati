@@ -6,13 +6,15 @@
 
 Name:           rust-%{crate}
 Version:        0.0.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Update agent for Fedora CoreOS
 
 # Upstream license specification: Apache-2.0
 License:        ASL 2.0
 URL:            https://crates.io/crates/zincati
 Source:         %{crates_source}
+# Initial patched metadata
+Patch0:         zincati-fix-metadata.diff
 
 ExclusiveArch:  %{rust_arches}
 
@@ -87,6 +89,9 @@ install -Dpm0644 -t %{buildroot}%{_tmpfilesdir} \
 %endif
 
 %changelog
+* Wed Jun 26 2019 Robert Fairley <rfairley@redhat.com> - 0.0.2-3
+- Patch to use liboverdrop-0.0.2
+
 * Wed Jun 26 2019 Robert Fairley <rfairley@redhat.com> - 0.0.2-2
 - Fix specfile log, and macro in comment
 
