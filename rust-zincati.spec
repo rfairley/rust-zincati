@@ -6,7 +6,7 @@
 
 Name:           rust-%{crate}
 Version:        0.0.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Update agent for Fedora CoreOS
 
 # Upstream license specification: Apache-2.0
@@ -35,15 +35,17 @@ Summary:        %{summary}
 %{_bindir}/zincati
 %doc README.md
 %license COPYRIGHT LICENSE
-%{_unitdir}/zincati.service
-%{_sysusersdir}/50-zincati.conf
+%dir %{_prefix}/lib/%{crate}
 %dir %{_prefix}/lib/%{crate}/config.d
 %{_prefix}/lib/%{crate}/config.d/50-fedora-coreos-cincinnati.toml
-%attr(0775, zincati, zincati) %dir /run/%{crate}/config.d
 %attr(0775, zincati, zincati) %dir /run/%{crate}
+%attr(0775, zincati, zincati) %dir /run/%{crate}/config.d
 %attr(0770, zincati, zincati) %dir /run/%{crate}/private
 # TODO: add /run/zincati/public once created in zincati.conf tmpfile.
+%dir %{_sysconfdir}/%{crate}
 %dir %{_sysconfdir}/%{crate}/config.d
+%{_unitdir}/zincati.service
+%{_sysusersdir}/50-zincati.conf
 %{_tmpfilesdir}/zincati.conf
 
 %pre         -n %{crate}
@@ -76,10 +78,10 @@ install -Dpm0644 -t %{buildroot}%{_prefix}/lib/%{crate}/config.d \
 mkdir -p %{buildroot}/run/%{crate}/config.d
 mkdir -p %{buildroot}/run/%{crate}/private
 mkdir -p %{buildroot}%{_sysconfdir}/%{crate}/config.d
-install -Dpm0644 -t %{buildroot}%{_sysusersdir} \
-  dist/sysusers.d/*.conf
 install -Dpm0644 -t %{buildroot}%{_unitdir} \
   dist/systemd/system/*.service
+install -Dpm0644 -t %{buildroot}%{_sysusersdir} \
+  dist/sysusers.d/*.conf
 install -Dpm0644 -t %{buildroot}%{_tmpfilesdir} \
   dist/tmpfiles.d/*.conf
 
@@ -89,6 +91,9 @@ install -Dpm0644 -t %{buildroot}%{_tmpfilesdir} \
 %endif
 
 %changelog
+* Tue Jul 02 2019 Robert Fairley <rfairley@redhat.com> - 0.0.2-5
+- Add missing owned directories, tidy owned files list
+
 * Tue Jul 02 2019 Robert Fairley <rfairley@redhat.com> - 0.0.2-4
 - Add runtime directories ownership by zincati sysuser
 
