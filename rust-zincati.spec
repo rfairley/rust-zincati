@@ -6,7 +6,7 @@
 
 Name:           rust-%{crate}
 Version:        0.0.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Update agent for Fedora CoreOS
 
 # Upstream license specification: Apache-2.0
@@ -39,9 +39,9 @@ Summary:        %{summary}
 %{_sysusersdir}/50-zincati.conf
 %dir %{_prefix}/lib/%{crate}/config.d
 %{_prefix}/lib/%{crate}/config.d/50-fedora-coreos-cincinnati.toml
-%dir /run/%{crate}/config.d
-%dir /run/%{crate}
-%dir /run/%{crate}/private
+%attr(0775, zincati, zincati) %dir /run/%{crate}/config.d
+%attr(0775, zincati, zincati) %dir /run/%{crate}
+%attr(0770, zincati, zincati) %dir /run/%{crate}/private
 # TODO: add /run/zincati/public once created in zincati.conf tmpfile.
 %dir %{_sysconfdir}/%{crate}/config.d
 %{_tmpfilesdir}/zincati.conf
@@ -89,6 +89,9 @@ install -Dpm0644 -t %{buildroot}%{_tmpfilesdir} \
 %endif
 
 %changelog
+* Tue Jul 02 2019 Robert Fairley <rfairley@redhat.com> - 0.0.2-4
+- Add runtime directories ownership by zincati sysuser
+
 * Wed Jun 26 2019 Robert Fairley <rfairley@redhat.com> - 0.0.2-3
 - Patch to use liboverdrop-0.0.2
 
