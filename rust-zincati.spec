@@ -6,7 +6,7 @@
 
 Name:           rust-%{crate}
 Version:        0.0.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Update agent for Fedora CoreOS
 
 # Upstream license specification: Apache-2.0
@@ -23,7 +23,7 @@ ExclusiveArch:  %{rust_arches}
 BuildRequires:  rust-packaging
 BuildRequires:  systemd-rpm-macros
 
-Requires:       %{_datadir}/polkit-1/rules.d
+Requires:       polkit
 
 %global _description %{expand:
 Update agent for Fedora CoreOS.}
@@ -98,6 +98,9 @@ install -Dpm0644 -t %{buildroot}%{_datadir}/polkit-1/rules.d \
 %endif
 
 %changelog
+* Thu Jul 04 2019 Robert Fairley <rfairley@redhat.com> - 0.0.2-7
+- Require the polkit package, rather than the rules.d directory
+
 * Thu Jul 04 2019 Robert Fairley <rfairley@redhat.com> - 0.0.2-6
 - Add polkit rule to authorize zincati to perform upgrades https://github.com/coreos/zincati/pull/59
 
