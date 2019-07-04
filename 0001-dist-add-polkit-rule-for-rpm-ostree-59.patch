@@ -1,0 +1,26 @@
+From 6b98e164cd233fb1a68d49d2b6b9f9bf2c2dcb8a Mon Sep 17 00:00:00 2001
+From: Robert Fairley <rfairley@redhat.com>
+Date: Thu, 4 Jul 2019 09:21:18 -0400
+Subject: [PATCH] dist: add polkit rule for rpm-ostree
+
+Add a polkit rule to allow the `zincati` user to make `deploy` and
+`finalize-deployment` calls to the D-Bus API exposed by rpm-ostree.
+---
+ dist/polkit-1/rules.d/zincati.rules | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+ create mode 100644 dist/polkit-1/rules.d/zincati.rules
+
+diff --git a/dist/polkit-1/rules.d/zincati.rules b/dist/polkit-1/rules.d/zincati.rules
+new file mode 100644
+index 0000000..2171bde
+--- /dev/null
++++ b/dist/polkit-1/rules.d/zincati.rules
+@@ -0,0 +1,8 @@
++// Allow Zincati to deploy, and finalize a staged deployment through rpm-ostree.
++polkit.addRule(function(action, subject) {
++    if ((action.id == "org.projectatomic.rpmostree1.deploy" ||
++         action.id == "org.projectatomic.rpmostree1.finalize-deployment") &&
++        subject.user == "zincati") {
++        return polkit.Result.YES;
++    }
++})

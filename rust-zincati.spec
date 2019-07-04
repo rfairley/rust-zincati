@@ -6,7 +6,7 @@
 
 Name:           rust-%{crate}
 Version:        0.0.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Update agent for Fedora CoreOS
 
 # Upstream license specification: Apache-2.0
@@ -15,11 +15,15 @@ URL:            https://crates.io/crates/zincati
 Source:         %{crates_source}
 # Initial patched metadata
 Patch0:         zincati-fix-metadata.diff
+# Add polkit rule to authorize zincati to perform upgrades https://github.com/coreos/zincati/pull/59
+Patch0001:      0001-dist-add-polkit-rule-for-rpm-ostree-59.patch
 
 ExclusiveArch:  %{rust_arches}
 
 BuildRequires:  rust-packaging
 BuildRequires:  systemd-rpm-macros
+
+Requires:       %{_datadir}/polkit-1/rules.d
 
 %global _description %{expand:
 Update agent for Fedora CoreOS.}
@@ -47,6 +51,7 @@ Summary:        %{summary}
 %{_unitdir}/zincati.service
 %{_sysusersdir}/50-zincati.conf
 %{_tmpfilesdir}/zincati.conf
+%{_datadir}/polkit-1/rules.d/zincati.rules
 
 %pre         -n %{crate}
 %sysusers_create_package %{crate} 50-zincati.conf
@@ -84,6 +89,8 @@ install -Dpm0644 -t %{buildroot}%{_sysusersdir} \
   dist/sysusers.d/*.conf
 install -Dpm0644 -t %{buildroot}%{_tmpfilesdir} \
   dist/tmpfiles.d/*.conf
+install -Dpm0644 -t %{buildroot}%{_datadir}/polkit-1/rules.d \
+  dist/polkit-1/rules.d/*.rules
 
 %if %{with check}
 %check
@@ -91,6 +98,9 @@ install -Dpm0644 -t %{buildroot}%{_tmpfilesdir} \
 %endif
 
 %changelog
+* Thu Jul 04 2019 Robert Fairley <rfairley@redhat.com> - 0.0.2-6
+- Add polkit rule to authorize zincati to perform upgrades https://github.com/coreos/zincati/pull/59
+
 * Tue Jul 02 2019 Robert Fairley <rfairley@redhat.com> - 0.0.2-5
 - Add missing owned directories, tidy owned files list
 
