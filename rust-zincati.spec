@@ -5,8 +5,8 @@
 %global crate zincati
 
 Name:           rust-%{crate}
-Version:        0.0.2
-Release:        7%{?dist}
+Version:        0.0.3
+Release:        1%{?dist}
 Summary:        Update agent for Fedora CoreOS
 
 # Upstream license specification: Apache-2.0
@@ -15,8 +15,6 @@ URL:            https://crates.io/crates/zincati
 Source:         %{crates_source}
 # Initial patched metadata
 Patch0:         zincati-fix-metadata.diff
-# Add polkit rule to authorize zincati to perform upgrades https://github.com/coreos/zincati/pull/59
-Patch0001:      0001-dist-add-polkit-rule-for-rpm-ostree-59.patch
 
 ExclusiveArch:  %{rust_arches}
 
@@ -42,6 +40,7 @@ Summary:        %{summary}
 %dir %{_prefix}/lib/%{crate}
 %dir %{_prefix}/lib/%{crate}/config.d
 %{_prefix}/lib/%{crate}/config.d/50-fedora-coreos-cincinnati.toml
+%{_prefix}/lib/%{crate}/config.d/10-auto-updates.toml
 %attr(0775, zincati, zincati) %dir /run/%{crate}
 %attr(0775, zincati, zincati) %dir /run/%{crate}/config.d
 %attr(0770, zincati, zincati) %dir /run/%{crate}/private
@@ -98,6 +97,10 @@ install -Dpm0644 -t %{buildroot}%{_datadir}/polkit-1/rules.d \
 %endif
 
 %changelog
+* Wed Jul 10 2019 Robert Fairley <rfairley@redhat.com> - 0.0.3-1
+- Update to 0.0.3
+- Temporarily relax futures to 0.1.27 and env_logger to 0.6.1
+
 * Thu Jul 04 2019 Robert Fairley <rfairley@redhat.com> - 0.0.2-7
 - Require the polkit package, rather than the rules.d directory
 
