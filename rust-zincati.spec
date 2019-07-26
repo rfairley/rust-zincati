@@ -6,7 +6,7 @@
 
 Name:           rust-%{crate}
 Version:        0.0.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Update agent for Fedora CoreOS
 
 # Upstream license specification: Apache-2.0
@@ -97,6 +97,9 @@ install -Dpm0644 -t %{buildroot}%{_datadir}/polkit-1/rules.d \
 %endif
 
 %changelog
+* Fri Jul 26 2019 Fedora Release Engineering <releng@fedoraproject.org> - 0.0.3-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
+
 * Wed Jul 10 2019 Robert Fairley <rfairley@redhat.com> - 0.0.3-1
 - Update to 0.0.3
 - Temporarily relax futures to 0.1.27 and env_logger to 0.6.1
