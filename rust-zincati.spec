@@ -5,7 +5,7 @@
 %global crate zincati
 
 Name:           rust-%{crate}
-Version:        0.0.5
+Version:        0.0.6
 Release:        1%{?dist}
 Summary:        Update agent for Fedora CoreOS
 
@@ -39,9 +39,10 @@ Summary:        %{summary}
 %license COPYRIGHT LICENSE
 %dir %{_prefix}/lib/%{crate}
 %dir %{_prefix}/lib/%{crate}/config.d
-%{_prefix}/lib/%{crate}/config.d/50-fedora-coreos-cincinnati.toml
 %{_prefix}/lib/%{crate}/config.d/10-auto-updates.toml
 %{_prefix}/lib/%{crate}/config.d/10-identity.toml
+%{_prefix}/lib/%{crate}/config.d/30-updates-strategy.toml
+%{_prefix}/lib/%{crate}/config.d/50-fedora-coreos-cincinnati.toml
 %attr(0775, zincati, zincati) %dir /run/%{crate}
 %attr(0775, zincati, zincati) %dir /run/%{crate}/config.d
 %attr(0770, zincati, zincati) %dir /run/%{crate}/private
@@ -102,6 +103,9 @@ install -Dpm0644 -t %{buildroot}%{_datadir}/polkit-1/rules.d \
 %endif
 
 %changelog
+* Tue Oct 15 2019 Robert Fairley <rfairley@redhat.com> - 0.0.6-1
+- Update to 0.0.6
+
 * Wed Sep 11 2019 Robert Fairley <rfairley@redhat.com> - 0.0.5-1
 - Update to 0.0.5
 - Install binary under /usr/libexec
