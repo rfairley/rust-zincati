@@ -5,7 +5,7 @@
 %global crate zincati
 
 Name:           rust-%{crate}
-Version:        0.0.8
+Version:        0.0.9
 Release:        1%{?dist}
 Summary:        Update agent for Fedora CoreOS
 
@@ -13,6 +13,10 @@ Summary:        Update agent for Fedora CoreOS
 License:        ASL 2.0
 URL:            https://crates.io/crates/zincati
 Source:         %{crates_source}
+# Update actix from ^0.9 to 0.10.0-alpha.1
+Patch0:         zincati-fix-metadata.diff
+# Update for actix 0.10.0-alpha.2 API
+Patch1:         0001-Update-agent-update-to-actix-0.10.0-alpha.2-API.patch
 
 ExclusiveArch:  %{rust_arches}
 
@@ -37,6 +41,7 @@ Summary:        %{summary}
 %license COPYRIGHT LICENSE
 %dir %{_prefix}/lib/%{crate}
 %dir %{_prefix}/lib/%{crate}/config.d
+%{_prefix}/lib/%{crate}/config.d/10-agent.toml
 %{_prefix}/lib/%{crate}/config.d/10-auto-updates.toml
 %{_prefix}/lib/%{crate}/config.d/10-identity.toml
 %{_prefix}/lib/%{crate}/config.d/30-updates-strategy.toml
@@ -44,7 +49,9 @@ Summary:        %{summary}
 %attr(0775, zincati, zincati) %dir /run/%{crate}
 %attr(0775, zincati, zincati) %dir /run/%{crate}/config.d
 %attr(0770, zincati, zincati) %dir /run/%{crate}/private
-# TODO: add /run/zincati/public once created in zincati.conf tmpfile.
+%attr(0775, zincati, zincati) %dir /run/%{crate}/public
+%verify(not size mtime md5) /run/%{crate}/public/metrics.promsock
+%verify(not size mtime md5) /run/%{crate}/private/metrics.promsock
 %dir %{_sysconfdir}/%{crate}
 %dir %{_sysconfdir}/%{crate}/config.d
 %{_unitdir}/zincati.service
@@ -85,6 +92,8 @@ install -Dpm0644 -t %{buildroot}%{_prefix}/lib/%{crate}/config.d \
   dist/config.d/*.toml
 mkdir -p %{buildroot}/run/%{crate}/config.d
 mkdir -p %{buildroot}/run/%{crate}/private
+mkdir -p %{buildroot}/run/%{crate}/public
+touch %{buildroot}/run/%{crate}/public/metrics.promsock
 mkdir -p %{buildroot}%{_sysconfdir}/%{crate}/config.d
 install -Dpm0644 -t %{buildroot}%{_unitdir} \
   dist/systemd/system/*.service
@@ -94,6 +103,7 @@ install -Dpm0644 -t %{buildroot}%{_tmpfilesdir} \
   dist/tmpfiles.d/*.conf
 install -Dpm0644 -t %{buildroot}%{_datadir}/polkit-1/rules.d \
   dist/polkit-1/rules.d/*.rules
+ln -srnf /run/%{crate}/public/metrics.promsock %{buildroot}/run/%{crate}/private/metrics.promsock
 
 %if %{with check}
 %check
@@ -101,6 +111,9 @@ install -Dpm0644 -t %{buildroot}%{_datadir}/polkit-1/rules.d \
 %endif
 
 %changelog
+* Tue Mar 24 2020 Robert Fairley <rfairley@redhat.com> - 0.0.9-1
+- Update to 0.0.9
+
 * Sun Feb 23 10:42:48 CET 2020 Igor Raits <ignatenkobrain@fedoraproject.org> - 0.0.8-1
 - Update to 0.0.8
 

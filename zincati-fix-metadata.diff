@@ -1,0 +1,11 @@
+--- zincati-0.0.9/Cargo.toml	2020-03-10T17:44:04+00:00
++++ zincati-0.0.9/Cargo.toml	2020-03-24T17:02:23.877616+00:00
+@@ -29,7 +29,7 @@
+ [profile.release]
+ lto = true
+ [dependencies.actix]
+-version = "^0.9"
++version = "0.10.0-alpha.2"
+ 
+ [dependencies.cfg-if]
+ version = "^0.1"
