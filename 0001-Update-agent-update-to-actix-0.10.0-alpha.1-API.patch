@@ -1,0 +1,127 @@
+diff --git a/src/update_agent/actor.rs b/src/update_agent/actor.rs
+index f3baf1f..daa362b 100644
+--- a/src/update_agent/actor.rs
++++ b/src/update_agent/actor.rs
+@@ -100,7 +100,7 @@ impl Handler<RefreshTick> for UpdateAgent {
+         // Process state machine refresh ticks sequentially.
+         ctx.wait(update_machine);
+ 
+-        Box::new(actix::fut::ok(()))
++        Box::pin(actix::fut::ok(()))
+     }
+ }
+ 
+@@ -159,7 +159,7 @@ impl UpdateAgent {
+             Ok(())
+         });
+ 
+-        Box::new(initialization)
++        Box::pin(initialization)
+     }
+ 
+     /// Try to report steady state.
+@@ -176,7 +176,7 @@ impl UpdateAgent {
+                 Ok(())
+             });
+ 
+-        Box::new(state_change)
++        Box::pin(state_change)
+     }
+ 
+     /// Try to check for updates.
+@@ -207,7 +207,7 @@ impl UpdateAgent {
+                 Ok(())
+             });
+ 
+-        Box::new(state_change)
++        Box::pin(state_change)
+     }
+ 
+     /// Try to stage an update.
+@@ -219,7 +219,7 @@ impl UpdateAgent {
+             .then(|can_fetch, actor, _ctx| actor.locked_upgrade(can_fetch, release))
+             .map(|res, actor, _ctx| res.map(|release| actor.state.update_staged(release)));
+ 
+-        Box::new(state_change)
++        Box::pin(state_change)
+     }
+ 
+     /// Try to finalize an update.
+@@ -234,7 +234,7 @@ impl UpdateAgent {
+             .then(|can_finalize, actor, _ctx| actor.finalize_deployment(can_finalize, release))
+             .map(|res, actor, _ctx| res.map(|release| actor.state.update_finalized(release)));
+ 
+-        Box::new(state_change)
++        Box::pin(state_change)
+     }
+ 
+     /// Actor job is done.
+@@ -245,7 +245,7 @@ impl UpdateAgent {
+             Ok(())
+         });
+ 
+-        Box::new(state_change)
++        Box::pin(state_change)
+     }
+ 
+     /// Fetch and stage an update, in finalization-locked mode.
+@@ -255,7 +255,7 @@ impl UpdateAgent {
+         release: Release,
+     ) -> ResponseActFuture<Self, Result<Release, ()>> {
+         if !can_fetch {
+-            return Box::new(actix::fut::err(()));
++            return Box::pin(actix::fut::err(()));
+         }
+ 
+         log::info!(
+@@ -273,7 +273,7 @@ impl UpdateAgent {
+             .map_err(|e| log::error!("failed to stage deployment: {}", e))
+             .into_actor(self);
+ 
+-        Box::new(upgrade)
++        Box::pin(upgrade)
+     }
+ 
+     /// List local deployments.
+@@ -282,7 +282,7 @@ impl UpdateAgent {
+         can_fetch: bool,
+     ) -> ResponseActFuture<Self, Result<(bool, BTreeSet<Release>), ()>> {
+         if !can_fetch {
+-            return Box::new(actix::fut::ok((can_fetch, BTreeSet::new())));
++            return Box::pin(actix::fut::ok((can_fetch, BTreeSet::new())));
+         }
+ 
+         let msg = rpm_ostree::QueryLocalDeployments {};
+@@ -297,7 +297,7 @@ impl UpdateAgent {
+             })
+             .into_actor(self);
+ 
+-        Box::new(depls)
++        Box::pin(depls)
+     }
+ 
+     /// Finalize a deployment (unlock and reboot).
+@@ -307,7 +307,7 @@ impl UpdateAgent {
+         release: Release,
+     ) -> ResponseActFuture<Self, Result<Release, ()>> {
+         if !can_finalize {
+-            return Box::new(actix::fut::err(()));
++            return Box::pin(actix::fut::err(()));
+         }
+ 
+         log::info!(
+@@ -322,12 +322,12 @@ impl UpdateAgent {
+             .map_err(|e| log::error!("failed to finalize deployment: {}", e))
+             .into_actor(self);
+ 
+-        Box::new(upgrade)
++        Box::pin(upgrade)
+     }
+ 
+     /// Do nothing, without errors.
+     fn nop(&mut self) -> ResponseActFuture<Self, Result<(), ()>> {
+         let nop = actix::fut::ok(());
+-        Box::new(nop)
++        Box::pin(nop)
+     }
+ }
